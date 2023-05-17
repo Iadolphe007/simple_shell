@@ -10,6 +10,9 @@
 #include <fcntl.h>
 #include <dirent.h>
 #include <string.h>
+#include <signal.h>
+#include <dirent.h>
+#define BUFFER_SIZE 1024
 
 
 #endif
