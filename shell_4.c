@@ -10,28 +10,59 @@
 
 void handle_variable_replacement(char *command, int status)
 {
-/* Allocate memory for the modified command */
-char *result = malloc(MAX_COMMAND_LENGTH);
-/* Variables for iteration and indexing */
+char result[MAX_COMMAND_LENGTH];
 int i, j = 0;
-
+int k;
+char exit_status[16];
+int exit_status_len;
+int temp_status;
+char pid_str[16];
+int pid_str_len;
+int temp_pid;
 for (i = 0; command[i] != '\0'; i++)
 {
 if (command[i] == '$')
 {
-i++;/* Move to the next character after '$' */
+i++;
 
 if (command[i] == '?')
 {
-/*  Replace "$?" with the exit status of the previous command */
-sprintf(result + j, "%d", WEXITSTATUS(status));
-j += strlen(result + j);/* Update the index */
+exit_status_len = 0;
+temp_status = WEXITSTATUS(status);
+
+if (temp_status == 0)
+{
+exit_status[exit_status_len++] = '0';
+}
+else
+{
+while (temp_status > 0)
+{
+exit_status[exit_status_len++] = '0' + (temp_status % 10);
+temp_status /= 10;
+}
+}
+
+for (k = exit_status_len - 1; k >= 0; k--)
+{
+result[j++] = exit_status[k];
+}
 }
 else if (command[i] == '$')
 {
-/* Replace "$$" with the process ID (PID) of the current process */
-sprintf(result + j, "%d", getpid());
-j += strlen(result + j);/* Update the index */
+pid_str_len = 0;
+temp_pid = getpid();
+
+while (temp_pid > 0)
+{
+pid_str[pid_str_len++] = '0' + (temp_pid % 10);
+temp_pid /= 10;
+}
+
+for (k = pid_str_len - 1; k >= 0; k--)
+{
+result[j++] = pid_str[k];
+}
 }
 else
 {
@@ -41,19 +72,16 @@ result[j++] = command[i];
 }
 else
 {
-/* Copy non-variable characters directly to the result */
 result[j++] = command[i];
 }
 }
-result[j] = '\0';/*  Add null terminator to the result */
-/* Copy the modified command back to the original command string */
-strcpy(command, result);
-/* Free the memory allocated for the modified command */
-free(result);
+
+result[j] = '\0';
+my_strcpy(command, result);
 }
 
 /**
- * builtin_echo - Implementation of the "echo" built-in command.
+ * builtin_echo - Implementation of the echo built-in command.
  * @args: The array of strings representing the command arguments.
  *
  * Return: Always 1 (indicating success).
@@ -61,36 +89,27 @@ free(result);
 
 int builtin_echo(char **args)
 {
-/* Start from index 1 to skip the command itself */
 int i = 1;
-/* Variable to store environment variable values */
 char *var;
 while (args[i] != NULL)
 {
 /* Check for variable replacement*/
 if (args[i][0] == '$')
 {
-/* Get the value of the environment variable */
-var = getenv(args[i] + 1);
+var = user_getenv(args[i] + 1);
 if (var != NULL)
 {
-/* Write the value to standard output */
-write(STDOUT_FILENO, var, strlen(var));
-/* Separate with a space */
+write(STDOUT_FILENO, var, my_strlen(var));
 write(STDOUT_FILENO, " ", 1);
 }
 }
 else
 {
-/* Write the argument to standard output */
-write(STDOUT_FILENO, args[i], strlen(args[i]));
-/* Separate with a space */
+write(STDOUT_FILENO, args[i], my_strlen(args[i]));
 write(STDOUT_FILENO, " ", 1);
 }
 i++;
 }
-/* Print a newline character */
 write(STDOUT_FILENO, "\n", 1);
-/* Return 1 to indicate success*/
 return (1);
 }
