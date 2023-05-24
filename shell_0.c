@@ -1,5 +1,4 @@
 #include "shell.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -25,10 +24,23 @@ void tokenize_command(char *command, char **argv, int max_args);
 void execute_command(char *command_path, char **argv);
 void execute_env_command(char **environ);
 void comd(void);
+void clear_screen(void);
 void change_directory(char *path);
 void handle_variable_replacement(char *command, int status);
 int builtin_echo(char **args);
 int exc_command(char *comd);
+int my_strlen(const char *str);
+char *my_strcpy(char *dest, char *src);
+int my_strncmp(const char *s1, const char *s2, size_t n);
+char *user_getenv(const char *name);
+int execute_exit_command(char *argv[]);
+int execute_cd_command(char *argv[]);
+int execute_echo_command(char *argv[]);
+int execute_other_command(char *argv[]);
+char *get_command_path(char *command);
+char *get_absolute_command_path(char *command);
+char *get_relative_command_path(char *command);
+
 
 /**
  * main - entry point
@@ -44,7 +56,7 @@ size_t cmd_size = 0;
 int loop_cont = 1;
 const char newline[] = "\n";
 char *mess = "this is simple shell project \n";
-int len = strlen(mess);
+int len = my_strlen(mess);
 
 write(1, mess, len);
 
