@@ -9,7 +9,7 @@ void clear_screen(void)
 /* Escape sequence for clearing the screen*/
 const char *clear_sequence = "\033[H\033[J";
 /* Write the sequence to standard output*/
-write(STDOUT_FILENO, clear_sequence, strlen(clear_sequence));
+write(STDOUT_FILENO, clear_sequence, my_strlen(clear_sequence));
 }
 
 /**
@@ -43,100 +43,6 @@ perror("cd");
 }
 }
 
-/**
- * exc_command - tokenize the string and create child
- * @comd: paramter pased to function
- *  Return: 0
- */
-
-int exc_command(char *comd)
-{
-char *argv[BUFFER_SIZE];
-char *cmd_path;
-int status;
-tokenize_command(comd, argv, BUFFER_SIZE);
-
-if (string_compare(argv[0], "exit") == 0)
-{
-if (argv[1] != NULL)
-{
-status = atoi(argv[1]);
-exit(status);
-}
-else
-{
-exit(0);
-}
-}
-
-if (string_compare(argv[0], "cd") == 0)
-{
-if (argv[1] != NULL)
-{
-change_directory(argv[1]);
-}
-else
-{
-struct passwd *pw = getpwuid(getuid());
-if (pw != NULL)
-{
-change_directory(pw->pw_dir);
-}
-}
-return (0);
-}
-else if (string_compare(argv[0], "echo") == 0 && argv[1] != NULL)
-{
-int i = 1;
-while (argv[i] != NULL)
-{
-if (argv[i][0] == '$')
-{
-char *var_name = argv[i] + 1;
-char *var_value = getenv(var_name);
-if (var_value != NULL)
-{
-write(STDOUT_FILENO, var_value, strlen(var_value));
-write(STDOUT_FILENO, " ", 1);
-}
-}
-else
-{
-write(STDOUT_FILENO, argv[i], strlen(argv[i]));
-write(STDOUT_FILENO, " ", 1);
-}
-i++;
-}
-write(STDOUT_FILENO, "\n", 1);
-}
-else
-{
-cmd_path = get_command_path(argv[0]);
-
-if (cmd_path != NULL)
-{
-if (string_compare(argv[0], "clear") == 0)
-{
-clear_screen();
-}
-else if (string_compare(argv[0], "env") == 0)
-{
-execute_env_command(environ);
-}
-else
-{
-execute_command(cmd_path, argv);
-}
-
-free(cmd_path);
-}
-else
-{
-write(STDERR_FILENO, "./shell: No such file or directory\n", sizeof("./shell: No such file or directory\n") - 1);
-}
-}
-return (0);
-}
 
 /**
  * comd - prompt user for input

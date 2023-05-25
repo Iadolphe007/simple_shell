@@ -37,12 +37,30 @@ argv[argc] = NULL;
 
 char *get_command_path(char *command)
 {
-char *dir = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
-char *command_path;
-int dir_len, i, j, path_len, command_len;
-
 if (command[0] == '/')
 {
+return (get_absolute_command_path(command));
+}
+else
+{
+return (get_relative_command_path(command));
+}
+}
+
+/**
+ * get_absolute_command_path - Retrieves the absolute
+ * path of a command if it is executable.
+ * @command: The name of the command.
+ *
+ * Return: The absolute path of the command if
+ * executable, otherwise NULL.
+ */
+char *get_absolute_command_path(char *command)
+{
+int i;
+char *command_path;
+int path_len;
+
 if (access(command, X_OK) == 0)
 {
 path_len = 0;
@@ -55,43 +73,58 @@ if (command_path == NULL)
 perror("malloc");
 _exit(EXIT_FAILURE);
 }
+
 for (i = 0; i <= path_len; i++)
 command_path[i] = command[i];
+
 return (command_path);
 }
+
 return (NULL);
 }
+
+/**
+ * get_relative_command_path - Retrieves the relative path of a command if it is executable.
+ * @command: The name of the command.
+ *
+ * Return: The relative path of the command if executable, otherwise NULL.
+ */
+char *get_relative_command_path(char *command)
+{
+int i, j;
+char *command_path;
+int path_len;
+int command_len;
+int dir_len;
+
+
+char *dir = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
+
 while (dir != NULL && *dir != '\0')
 {
 dir_len = 0;
 while (dir[dir_len] != '\0' && dir[dir_len] != ':')
 dir_len++;
-command_len = 0;
 
+command_len = 0;
 while (command[command_len] != '\0')
 command_len++;
-
 path_len = dir_len + command_len + 2;
 command_path = (char *)malloc(path_len);
-
 if (command_path == NULL)
 {
 perror("malloc");
 _exit(EXIT_FAILURE);
 }
-
 for (i = 0; i < dir_len; i++)
 command_path[i] = dir[i];
 command_path[i++] = '/';
-
 for (j = 0; command[j] != '\0'; j++, i++)
 command_path[i] = command[j];
 command_path[i] = '\0';
-
 if (access(command_path, X_OK) == 0)
 return (command_path);
 free(command_path);
-
 if (dir[dir_len] == ':')
 dir += (dir_len + 1);
 else
