@@ -17,4 +17,5 @@ char *get_command_path(char *command);
 void execute_command(char *command_path, char **argv);
 int string_compare(char *str1, char *str2);
 
+
 #endif /* SHELL_H */

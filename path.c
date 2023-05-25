@@ -12,7 +12,7 @@ char *get_command_path(char *command)
 	char *dir = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
 	char *command_path;
 	int dir_len, i, j, command_len, path_len;
-	
+
 	if (command[0] == '/')
 	{
 		if (access(command, X_OK) == 0)
@@ -42,7 +42,6 @@ char *get_command_path(char *command)
 			command_len++;
 		path_len = dir_len + command_len + 2;
 		command_path = (char *)malloc(path_len);
-
 		if (command_path == NULL)
 		{
 			perror("malloc");
@@ -55,7 +54,7 @@ char *get_command_path(char *command)
 			command_path[i] = command[j];
 		command_path[i] = '\0';
 		if (access(command_path, X_OK) == 0)
-			 return (command_path);
+			return (command_path);
 		free(command_path);
 		if (dir[dir_len] == ':')
 			dir += (dir_len + 1);
@@ -63,4 +62,5 @@ char *get_command_path(char *command)
 			dir = NULL;
 	}
 	return (NULL);
+
 }

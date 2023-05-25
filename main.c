@@ -2,6 +2,7 @@
 
 /**
  * main - prompt user for input
+ * Return: 0
  * loop_cont - make loop continue as long as it's equal to one
  * break -  it  Exit the loop if the command is "exit"
  */
@@ -20,9 +21,8 @@ int main(void)
 			command[read_status - 1] = '\0';
 			if (string_compare(command, "exit"))
 				break;
-			else
-				exc_command(command);
-			
+			exc_command(command);
+
 		}
 		else
 			break;
