@@ -43,10 +43,6 @@ ssize_t read_bytes;
 size_t cmd_size = 0;
 int loop_cont = 1;
 const char newline[] = "\n";
-char *mess = "this is simple shell project \n";
-int len = strlen(mess);
-
-write(1, mess, len);
 
 while (loop_cont && write(STDOUT_FILENO, prompt, sizeof(prompt) - 1))
 {
