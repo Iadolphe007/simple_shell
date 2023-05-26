@@ -12,7 +12,7 @@ int exc_command(char *comd)
 	char *cmd_path;
 
 	tokenize_command(comd, argv, BUFFER_SIZE);
-	cmd_path = get_command_path(argv[0]);
+	cmd_path = new_function(argv[0]);
 
 	if (cmd_path != NULL)
 	{
