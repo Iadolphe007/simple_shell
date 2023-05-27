@@ -1,6 +1,5 @@
 #include "shell.h"
 
-
 /**
  * tokenize_command - tokenize command string into individual arguments
  * and storing them in the argv array
@@ -13,14 +12,19 @@
 
 void tokenize_command(char *command, char **argv, int max_args)
 {
-	int argc = 0;
-	char *token = strtok(command, " ");
+int argc = 0;
+char *token = strtok(command, " \t\r\n");
 
-	while (token != NULL && argc < max_args - 1)
-	{
-		argv[argc++] = token;
-		token = strtok(NULL, " ");
-	}
-	argv[argc] = NULL;
+while (token != NULL && argc < max_args - 1)
+{
+if (token[0] == '#')
+{
+break;
 }
 
+argv[argc++] = token;
+token = strtok(NULL, " \t\r\n");
+}
+
+argv[argc] = NULL;
+}
